@@ -200,8 +200,10 @@ export default function SignupPage() {
         setEmailSent(true);
         setLoading(false);
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error("Signup error:", msg);
+      setError(msg.includes("Missing Supabase") ? "App not configured — env vars missing on Vercel." : "Something went wrong. Please try again.");
       setLoading(false);
     }
   }

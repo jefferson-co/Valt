@@ -196,7 +196,9 @@ function LoginForm() {
       if (error) { setError(error.message); setLoading(false); return; }
       window.location.href = "/dashboard";
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error("Login error:", msg);
+      setError(msg.includes("Missing Supabase") ? "App not configured — env vars missing on Vercel." : "Something went wrong. Please try again.");
       setLoading(false);
     }
   }
