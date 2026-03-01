@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile, Link as LinkType, Social } from "@/types/database";
-import { Check, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import { Camera, Check, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 
 /* ─── Theme constants ─── */
 const FONTS = [
@@ -294,10 +294,11 @@ export default function FeelPage() {
   const [addingLink,    setAddingLink]    = useState(false);
   const [newLinkTitle,  setNewLinkTitle]  = useState("");
   const [newLinkUrl,    setNewLinkUrl]    = useState("");
-  const [socialDrafts,  setSocialDrafts]  = useState<Record<string, string>>({ x: "", linkedin: "", instagram: "" });
-  const [savingSocials, setSavingSocials] = useState(false);
-  const [savedSocials,  setSavedSocials]  = useState(false);
-  const [socialsDirty,  setSocialsDirty]  = useState(false);
+  const [socialDrafts,    setSocialDrafts]    = useState<Record<string, string>>({ x: "", linkedin: "", instagram: "" });
+  const [savingSocials,   setSavingSocials]   = useState(false);
+  const [savedSocials,    setSavedSocials]    = useState(false);
+  const [socialsDirty,    setSocialsDirty]    = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   /* Load Google Fonts */
   useEffect(() => {
@@ -358,6 +359,24 @@ export default function FeelPage() {
     }
     load();
   }, []);
+
+  /* Avatar upload */
+  async function handleAvatarUpload(file: File) {
+    if (!userId) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Image must be under 5MB"); return; }
+    setUploadingAvatar(true);
+    const supabase = createClient();
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `${userId}/avatar.${ext}`;
+    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (!error) {
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+      await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", userId);
+      setProfile((p) => ({ ...p, avatar_url: publicUrl }));
+    }
+    setUploadingAvatar(false);
+  }
 
   /* Profile save */
   async function saveProfile() {
@@ -503,6 +522,25 @@ export default function FeelPage() {
 
         {/* ── About Me ── */}
         <SectionCard title="About Me" defaultOpen>
+          {/* Avatar upload */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+            <label style={{ position: "relative", cursor: "pointer", display: "inline-block" }}>
+              {profile.avatar_url
+                ? <img src={profile.avatar_url} alt="Avatar" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", display: "block" }} />
+                : <div style={{ width: 72, height: 72, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "white" }}>
+                    {((profile.display_name || profile.username || "?")[0] ?? "?").toUpperCase()}
+                  </div>
+              }
+              <div style={{ position: "absolute", bottom: 0, right: 0, width: 24, height: 24, borderRadius: "50%", background: "var(--surface)", border: "2px solid var(--border-col)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {uploadingAvatar
+                  ? <svg className="animate-spin" width="11" height="11" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--text-3)" strokeWidth="3"/><path className="opacity-75" fill="var(--text-3)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  : <Camera size={11} style={{ color: "var(--text-2)" }} />
+                }
+              </div>
+              <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); }} />
+            </label>
+          </div>
+
           <div style={{ marginBottom: 11 }}>
             <label style={{ display: "block", fontSize: 10, color: "var(--text-2)", marginBottom: 4, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase" }}>
               Full name
