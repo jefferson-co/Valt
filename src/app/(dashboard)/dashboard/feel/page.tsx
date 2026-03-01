@@ -457,10 +457,10 @@ export default function FeelPage() {
   }
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - var(--nav-h, 56px))", overflow: "hidden" }}>
+    <div className="dash-outer" style={{ display: "flex", height: "calc(100vh - var(--nav-h, 56px))", overflow: "hidden" }}>
 
       {/* ── Left: Live Preview ── */}
-      <div style={{ flex: 1, borderRight: "1px solid var(--border-col)", overflowY: "auto", padding: "28px 24px 48px" }}>
+      <div className="feel-preview" style={{ flex: 1, borderRight: "1px solid var(--border-col)", overflowY: "auto", padding: "28px 24px 48px" }}>
         <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "var(--text-3)", margin: "0 0 20px" }}>
           Live Preview
         </p>
@@ -468,7 +468,7 @@ export default function FeelPage() {
       </div>
 
       {/* ── Right: Editor ── */}
-      <div style={{ width: 376, flexShrink: 0, overflowY: "auto", padding: "20px 16px 64px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="feel-editor" style={{ width: 376, flexShrink: 0, overflowY: "auto", padding: "20px 16px 64px", display: "flex", flexDirection: "column", gap: 8 }}>
 
         {/* Header row */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>

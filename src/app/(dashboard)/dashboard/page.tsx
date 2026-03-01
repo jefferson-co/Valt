@@ -161,10 +161,10 @@ export default function MePage() {
   }
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - var(--nav-h, 56px))", overflow: "hidden" }}>
+    <div className="dash-outer" style={{ display: "flex", height: "calc(100vh - var(--nav-h, 56px))", overflow: "hidden" }}>
 
       {/* ── Left: Profile content ── */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "36px 40px 64px", borderRight: "1px solid var(--border-col)" }}>
+      <div className="dash-left" style={{ flex: 1, overflowY: "auto", padding: "36px 40px 64px", borderRight: "1px solid var(--border-col)" }}>
 
         {/* Avatar + Name + Edit button */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 18, marginBottom: 24 }}>
@@ -279,7 +279,7 @@ export default function MePage() {
       </div>
 
       {/* ── Right: Mini insights ── */}
-      <div style={{ width: 316, flexShrink: 0, overflowY: "auto", padding: "24px 18px 48px" }}>
+      <div className="dash-right" style={{ width: 316, flexShrink: 0, overflowY: "auto", padding: "24px 18px 48px" }}>
 
         {/* Last 7 days chart */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border-col)", borderRadius: 16, padding: "16px 16px 14px", marginBottom: 10 }}>

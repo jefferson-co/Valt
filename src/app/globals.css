@@ -116,6 +116,37 @@ textarea,
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-col); border-radius: 4px; }
 
+/* ─── Mobile responsive ─── */
+@media (max-width: 768px) {
+  /* Dual-pane → single scrollable column */
+  .dash-outer {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    min-height: calc(100vh - var(--nav-h, 56px));
+  }
+  .dash-left {
+    padding: 20px 16px 32px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-col);
+  }
+  .dash-right { display: none !important; }
+
+  /* Feel: hide live preview, show editor full-width */
+  .feel-preview { display: none !important; }
+  .feel-editor {
+    width: 100% !important;
+    padding: 20px 16px 48px !important;
+  }
+
+  /* Insights stat cards — 1 column */
+  .stat-grid-3 { grid-template-columns: 1fr !important; }
+
+  /* TopNav — compact */
+  .nav-logo-text { display: none; }
+  .nav-tab { padding: 0 10px !important; font-size: 13px !important; }
+}
+
 /* ─── Landing page feature card accents ─── */
 .feature-card {
   position: relative;

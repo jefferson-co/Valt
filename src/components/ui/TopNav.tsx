@@ -87,6 +87,7 @@ export function TopNav({ username, displayName }: TopNavProps) {
           />
         </svg>
         <span
+          className="nav-logo-text"
           style={{
             fontFamily: "var(--font-display), Epilogue, sans-serif",
             fontWeight: 700,
