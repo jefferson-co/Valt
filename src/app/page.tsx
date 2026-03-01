@@ -3,7 +3,8 @@
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 function GoogleIcon() {
   return (
@@ -17,7 +18,25 @@ function GoogleIcon() {
 }
 
 export default function EntryPage() {
+  const router = useRouter();
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    async function checkAuth() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.replace("/dashboard");
+      } else {
+        setChecking(false);
+      }
+    }
+    checkAuth();
+  }, [router]);
+
+  if (checking) return null;
 
   async function handleGoogleLogin() {
     setGoogleLoading(true);

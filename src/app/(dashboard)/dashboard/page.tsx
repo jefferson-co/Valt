@@ -50,7 +50,10 @@ function getDayLabels(): string[] {
 
 function buildDayStats(totalClicks: number): DayStat[] {
   const labels = getDayLabels();
-  const base = Math.max(totalClicks * 3, 20);
+  if (totalClicks === 0) {
+    return labels.map((date) => ({ date, views: 0, clicks: 0 }));
+  }
+  const base = totalClicks * 3;
   return labels.map((date, i) => {
     const wave = Math.sin(i * 0.8 + 1) * 0.4 + 1;
     const views  = Math.round((base / 7) * wave * (0.7 + Math.random() * 0.6));
@@ -169,7 +172,9 @@ export default function MePage() {
         {/* Avatar + Name + Edit button */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 18, marginBottom: 24 }}>
           {profile.avatar_url
-            ? <img src={profile.avatar_url} alt={name} style={{ width: 68, height: 68, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+            ? <div style={{ width: 68, height: 68, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
+                <img src={profile.avatar_url} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
             : <div style={{ width: 68, height: 68, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "white", flexShrink: 0 }}>{name[0]?.toUpperCase()}</div>
           }
           <div style={{ flex: 1, minWidth: 0 }}>

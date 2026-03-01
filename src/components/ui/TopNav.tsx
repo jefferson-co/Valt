@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Settings, ExternalLink } from "lucide-react";
+import { ChevronDown, LogOut, ExternalLink } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface TopNavProps {
@@ -255,25 +255,6 @@ export function TopNav({ username, displayName }: TopNavProps) {
                   valt.app/{username}
                 </p>
               </div>
-
-              {/* Settings */}
-              <Link
-                href="/dashboard/settings"
-                onClick={() => setDropdownOpen(false)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 9,
-                  padding: "10px 14px",
-                  fontSize: 13,
-                  color: "var(--text-2)",
-                  textDecoration: "none",
-                  borderBottom: "1px solid var(--border-col)",
-                }}
-              >
-                <Settings size={14} />
-                Settings
-              </Link>
 
               {/* Log out */}
               <button

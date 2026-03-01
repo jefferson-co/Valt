@@ -219,17 +219,13 @@ export default async function PublicProfilePage({
         >
           {/* Avatar */}
           {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.display_name ?? profile.username}
-              style={{
-                width: 88,
-                height: 88,
-                borderRadius: "50%",
-                objectFit: "cover",
-                marginBottom: 16,
-              }}
-            />
+            <div style={{ width: 88, height: 88, borderRadius: "50%", overflow: "hidden", flexShrink: 0, marginBottom: 16 }}>
+              <img
+                src={profile.avatar_url}
+                alt={profile.display_name ?? profile.username}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+            </div>
           ) : (
             <div
               style={{

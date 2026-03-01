@@ -224,7 +224,9 @@ function LivePreview({ profile, links, socials, theme }: {
       <div style={{ padding: "44px 24px 52px", display: "flex", flexDirection: "column", alignItems: "center" }}>
         {/* Avatar */}
         {profile.avatar_url
-          ? <img src={profile.avatar_url} alt={name} style={{ width: 76, height: 76, borderRadius: "50%", objectFit: "cover", marginBottom: 14 }} />
+          ? <div style={{ width: 76, height: 76, borderRadius: "50%", overflow: "hidden", flexShrink: 0, marginBottom: 14 }}>
+              <img src={profile.avatar_url} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
           : <div style={{ width: 76, height: 76, borderRadius: "50%", background: `${textColor}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 700, color: textColor, marginBottom: 14 }}>
               {name[0]?.toUpperCase()}
             </div>
