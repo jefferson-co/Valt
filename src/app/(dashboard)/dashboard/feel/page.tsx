@@ -286,12 +286,18 @@ export default function FeelPage() {
   const [userId,        setUserId]        = useState<string | null>(null);
   const [loaded,        setLoaded]        = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [savedProfile,  setSavedProfile]  = useState(false);
+  const [profileDirty,  setProfileDirty]  = useState(false);
   const [savingTheme,   setSavingTheme]   = useState(false);
   const [savedTheme,    setSavedTheme]    = useState(false);
   const [savingLinks,   setSavingLinks]   = useState(false);
   const [addingLink,    setAddingLink]    = useState(false);
   const [newLinkTitle,  setNewLinkTitle]  = useState("");
   const [newLinkUrl,    setNewLinkUrl]    = useState("");
+  const [socialDrafts,  setSocialDrafts]  = useState<Record<string, string>>({ x: "", linkedin: "", instagram: "" });
+  const [savingSocials, setSavingSocials] = useState(false);
+  const [savedSocials,  setSavedSocials]  = useState(false);
+  const [socialsDirty,  setSocialsDirty]  = useState(false);
 
   /* Load Google Fonts */
   useEffect(() => {
@@ -320,7 +326,14 @@ export default function FeelPage() {
       ]);
       if (p.data) setProfile(p.data as Profile);
       if (l.data) setLinks(l.data as LinkType[]);
-      if (s.data) setSocials(s.data as Social[]);
+      if (s.data) {
+        setSocials(s.data as Social[]);
+        const drafts: Record<string, string> = { x: "", linkedin: "", instagram: "" };
+        for (const soc of s.data as Social[]) {
+          if (soc.platform in drafts) drafts[soc.platform] = soc.url;
+        }
+        setSocialDrafts(drafts);
+      }
       if (sec.data) setSections(sec.data as Section[]);
       if (t.data) {
         const td = t.data;
@@ -353,24 +366,33 @@ export default function FeelPage() {
     const supabase = createClient();
     await supabase.from("profiles").update({ display_name: profile.display_name, bio: profile.bio }).eq("id", userId);
     setSavingProfile(false);
+    setSavedProfile(true);
+    setProfileDirty(false);
+    setTimeout(() => setSavedProfile(false), 2500);
   }
 
-  /* Social auto-save on blur */
-  async function saveSocial(platform: string, url: string) {
+  /* Social save (explicit button) */
+  async function saveSocials() {
     if (!userId) return;
+    setSavingSocials(true);
     const supabase = createClient();
-    if (!url.trim()) {
-      await supabase.from("socials").delete().eq("user_id", userId).eq("platform", platform);
-      setSocials((prev) => prev.filter((s) => s.platform !== platform));
-    } else {
-      await supabase.from("socials").upsert({ user_id: userId, platform, url }, { onConflict: "user_id,platform" });
-      setSocials((prev) => {
-        const exists = prev.find((s) => s.platform === platform);
-        return exists
-          ? prev.map((s) => (s.platform === platform ? { ...s, url } : s))
-          : [...prev, { id: "", user_id: userId!, platform: platform as Social["platform"], url }];
-      });
+    const platforms = ["x", "linkedin", "instagram"] as const;
+    for (const platform of platforms) {
+      const url = socialDrafts[platform]?.trim() ?? "";
+      if (!url) {
+        await supabase.from("socials").delete().eq("user_id", userId).eq("platform", platform);
+      } else {
+        await supabase.from("socials").upsert({ user_id: userId, platform, url }, { onConflict: "user_id,platform" });
+      }
     }
+    const newSocials: Social[] = platforms
+      .filter((p) => socialDrafts[p]?.trim())
+      .map((p) => ({ id: "", user_id: userId!, platform: p as Social["platform"], url: socialDrafts[p] }));
+    setSocials(newSocials);
+    setSavingSocials(false);
+    setSavedSocials(true);
+    setSocialsDirty(false);
+    setTimeout(() => setSavedSocials(false), 2500);
   }
 
   /* Link CRUD */
@@ -443,7 +465,6 @@ export default function FeelPage() {
 
   const socialCount    = socials.filter((s) => s.url).length;
   const activeLinkCount = links.filter((l) => l.is_active).length;
-  const getSocial = (platform: string) => socials.find((s) => s.platform === platform)?.url ?? "";
 
   if (!loaded) {
     return (
@@ -489,7 +510,7 @@ export default function FeelPage() {
             <input
               type="text"
               value={profile.display_name ?? ""}
-              onChange={(e) => setProfile((p) => ({ ...p, display_name: e.target.value }))}
+              onChange={(e) => { setProfile((p) => ({ ...p, display_name: e.target.value })); setProfileDirty(true); setSavedProfile(false); }}
               placeholder="Your display name"
               style={{ width: "100%", height: 36, background: "var(--surface-2)", border: "1px solid var(--border-col)", borderRadius: 8, padding: "0 10px", fontSize: 13, color: "var(--text-1)", outline: "none", boxSizing: "border-box" }}
               onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
@@ -502,7 +523,7 @@ export default function FeelPage() {
             </label>
             <textarea
               value={profile.bio ?? ""}
-              onChange={(e) => setProfile((p) => ({ ...p, bio: e.target.value }))}
+              onChange={(e) => { setProfile((p) => ({ ...p, bio: e.target.value })); setProfileDirty(true); setSavedProfile(false); }}
               placeholder="A short bio about you…"
               rows={3}
               style={{ width: "100%", background: "var(--surface-2)", border: "1px solid var(--border-col)", borderRadius: 8, padding: "7px 10px", fontSize: 13, color: "var(--text-1)", outline: "none", boxSizing: "border-box", resize: "vertical", fontFamily: "var(--font-sans), sans-serif" }}
@@ -510,9 +531,9 @@ export default function FeelPage() {
               onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-col)")}
             />
           </div>
-          <button onClick={saveProfile} disabled={savingProfile}
-            style={{ height: 32, padding: "0 16px", borderRadius: 9999, background: "var(--accent)", border: "none", color: "white", fontSize: 12, fontWeight: 600, cursor: savingProfile ? "not-allowed" : "pointer", opacity: savingProfile ? 0.6 : 1 }}>
-            {savingProfile ? "Saving…" : "Save"}
+          <button onClick={saveProfile} disabled={savingProfile || !profileDirty}
+            style={{ height: 32, padding: "0 16px", borderRadius: 9999, background: "var(--accent)", border: "none", color: "white", fontSize: 12, fontWeight: 600, cursor: (savingProfile || !profileDirty) ? "not-allowed" : "pointer", opacity: (savingProfile || !profileDirty) ? 0.5 : 1, display: "flex", alignItems: "center", gap: 6 }}>
+            {savedProfile ? <><Check size={13} /> Saved</> : savingProfile ? "Saving…" : "Save"}
           </button>
         </SectionCard>
 
@@ -526,13 +547,18 @@ export default function FeelPage() {
               <input
                 type="url"
                 placeholder={`${platform === "x" ? "X / Twitter" : platform.charAt(0).toUpperCase() + platform.slice(1)} URL`}
-                defaultValue={getSocial(platform)}
+                value={socialDrafts[platform] ?? ""}
+                onChange={(e) => { setSocialDrafts((prev) => ({ ...prev, [platform]: e.target.value })); setSocialsDirty(true); setSavedSocials(false); }}
                 style={{ flex: 1, height: 34, background: "var(--surface-2)", border: "1px solid var(--border-col)", borderRadius: 8, padding: "0 10px", fontSize: 13, color: "var(--text-1)", outline: "none" }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
-                onBlur={(e) => { saveSocial(platform, e.currentTarget.value); e.currentTarget.style.borderColor = "var(--border-col)"; }}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border-col)")}
               />
             </div>
           ))}
+          <button onClick={saveSocials} disabled={savingSocials || !socialsDirty}
+            style={{ marginTop: 2, height: 32, padding: "0 16px", borderRadius: 9999, background: "var(--accent)", border: "none", color: "white", fontSize: 12, fontWeight: 600, cursor: (savingSocials || !socialsDirty) ? "not-allowed" : "pointer", opacity: (savingSocials || !socialsDirty) ? 0.5 : 1, display: "flex", alignItems: "center", gap: 6 }}>
+            {savedSocials ? <><Check size={13} /> Saved</> : savingSocials ? "Saving…" : "Save"}
+          </button>
         </SectionCard>
 
         {/* ── Links ── */}
