@@ -525,12 +525,14 @@ export default function FeelPage() {
           {/* Avatar upload */}
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
             <label style={{ position: "relative", cursor: "pointer", display: "inline-block" }}>
-              {profile.avatar_url
-                ? <img src={profile.avatar_url} alt="Avatar" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", display: "block" }} />
-                : <div style={{ width: 72, height: 72, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "white" }}>
-                    {((profile.display_name || profile.username || "?")[0] ?? "?").toUpperCase()}
-                  </div>
-              }
+              <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
+                {profile.avatar_url
+                  ? <img src={profile.avatar_url} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  : <div style={{ width: "100%", height: "100%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "white" }}>
+                      {((profile.display_name || profile.username || "?")[0] ?? "?").toUpperCase()}
+                    </div>
+                }
+              </div>
               <div style={{ position: "absolute", bottom: 0, right: 0, width: 24, height: 24, borderRadius: "50%", background: "var(--surface)", border: "2px solid var(--border-col)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {uploadingAvatar
                   ? <svg className="animate-spin" width="11" height="11" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="var(--text-3)" strokeWidth="3"/><path className="opacity-75" fill="var(--text-3)" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
