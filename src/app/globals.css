@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/* ─── Light theme (dashboard) ─── */
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --destructive: #ef4444;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-display: var(--font-epilogue), "Epilogue", sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a,
+input,
+textarea,
+[role="button"] {
+  transition: color 150ms ease, background-color 150ms ease,
+    border-color 150ms ease, opacity 150ms ease, box-shadow 150ms ease;
+}
+
+/* ─── Feature card corner accents ─── */
+.feature-card {
+  position: relative;
+}
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  border-left: 1px dashed rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+.feature-card::after {
+  content: "";
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  width: 18px;
+  height: 18px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+  border-right: 1px dashed rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
