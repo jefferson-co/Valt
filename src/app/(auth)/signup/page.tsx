@@ -176,6 +176,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -183,7 +184,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -191,7 +192,14 @@ export default function SignupPage() {
         },
       });
       if (error) { setError(error.message); setLoading(false); return; }
-      router.push("/signup/username");
+      if (data.session) {
+        // Email confirmation is off — session created immediately
+        window.location.href = "/signup/username";
+      } else {
+        // Email confirmation is on — ask user to check inbox
+        setEmailSent(true);
+        setLoading(false);
+      }
     } catch {
       setError("Something went wrong. Please try again.");
       setLoading(false);
@@ -210,6 +218,53 @@ export default function SignupPage() {
     } catch {
       setGoogleLoading(false);
     }
+  }
+
+  if (emailSent) {
+    return (
+      <div
+        className="flex min-h-screen flex-col items-center justify-center px-4"
+        style={{ background: "var(--bg)", fontFamily: "var(--font-dm-sans), DM Sans, sans-serif" }}
+      >
+        <div
+          style={{
+            maxWidth: 400,
+            width: "100%",
+            background: "var(--surface)",
+            border: "1px solid var(--border-col)",
+            borderRadius: 20,
+            padding: "48px 40px",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: 40, marginBottom: 16 }}>📬</div>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-1)", margin: "0 0 10px", fontFamily: "var(--font-epilogue), Epilogue, sans-serif" }}>
+            Check your email
+          </h1>
+          <p style={{ color: "var(--text-2)", fontSize: 14, lineHeight: 1.6, margin: "0 0 24px" }}>
+            We sent a confirmation link to <strong style={{ color: "var(--text-1)" }}>{email}</strong>.
+            Click it to confirm your account, then come back and log in.
+          </p>
+          <Link
+            href="/login"
+            style={{
+              display: "inline-block",
+              height: 46,
+              lineHeight: "46px",
+              borderRadius: 9999,
+              background: "var(--accent)",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 14,
+              textDecoration: "none",
+              padding: "0 28px",
+            }}
+          >
+            Go to login
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
