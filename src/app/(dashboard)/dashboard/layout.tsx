@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Sidebar } from "@/components/ui/Sidebar";
+import { TopNav } from "@/components/ui/TopNav";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -23,14 +23,9 @@ export default async function DashboardLayout({
   if (!profile) redirect("/signup/username");
 
   return (
-    <div className="flex h-screen" style={{ background: "#FAFAFA" }}>
-      <Sidebar
-        username={profile.username}
-        displayName={profile.display_name}
-      />
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-[960px] p-8">{children}</div>
-      </main>
+    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+      <TopNav username={profile.username} displayName={profile.display_name} />
+      <main>{children}</main>
     </div>
   );
 }

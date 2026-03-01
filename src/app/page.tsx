@@ -1,406 +1,169 @@
-import Link from "next/link";
-import {
-  BarChart3,
-  FileText,
-  GripVertical,
-  Link2,
-  Palette,
-  Settings2,
-  Share2,
-  Layers,
-} from "lucide-react";
+"use client";
 
-/* ─── Logo mark ─── */
-function ValtLogo({ className = "" }: { className?: string }) {
+import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
+import { Mail } from "lucide-react";
+import { useState } from "react";
+
+function GoogleIcon() {
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <rect width="22" height="22" rx="5" fill="white" />
-        <path
-          d="M7 8L11 14L15 8"
-          stroke="#0A0A0A"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span
-        style={{ fontFamily: "var(--font-epilogue), Epilogue, sans-serif" }}
-        className="text-[18px] font-bold text-white"
-      >
-        Valt
-      </span>
-    </div>
+    <svg width="18" height="18" viewBox="0 0 24 24">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </svg>
   );
 }
 
-const BRANDS = [
-  "Synergy™",
-  "Apex™",
-  "Catalyst™",
-  "Horizon™",
-  "Solaris™",
-  "Pulse™",
-];
+export default function EntryPage() {
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-const FEATURES = [
-  {
-    icon: Palette,
-    title: "Customizable Themes",
-    desc: "Colors, gradients, fonts, and button styles — all yours to control.",
-  },
-  {
-    icon: BarChart3,
-    title: "Link Analytics",
-    desc: "Track page views, link clicks, and referral sources in real time.",
-  },
-  {
-    icon: FileText,
-    title: "CV / Resume Upload",
-    desc: "Upload a PDF and let visitors preview or download it directly.",
-  },
-  {
-    icon: Share2,
-    title: "Social Icons",
-    desc: "X, LinkedIn, Instagram — displayed with your chosen icon style.",
-  },
-  {
-    icon: Layers,
-    title: "Custom Sections",
-    desc: "Group your links under labeled sections for clarity.",
-  },
-  {
-    icon: GripVertical,
-    title: "Drag & Reorder",
-    desc: "Rearrange links in seconds. Your page, your order.",
-  },
-];
+  async function handleGoogleLogin() {
+    setGoogleLoading(true);
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  }
 
-export default function LandingPage() {
   return (
     <div
-      className="min-h-screen"
-      style={{ background: "#0A0A0A", color: "#fff" }}
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg)",
+        position: "relative",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      {/* ── Navigation ── */}
-      <header
-        className="sticky top-0 z-50 flex h-16 items-center justify-between px-6 md:px-10"
+      {/* Logo */}
+      <div className="entry-logo" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 32 }}>
+        <svg width="52" height="52" viewBox="0 0 22 22" fill="none">
+          <rect width="22" height="22" rx="6" fill="var(--text-1)" />
+          <path
+            d="M7 8L11 14L15 8"
+            stroke="var(--bg)"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <span
+          style={{
+            fontFamily: "var(--font-display), Epilogue, sans-serif",
+            fontWeight: 800,
+            fontSize: 19,
+            color: "var(--text-1)",
+            letterSpacing: "-0.3px",
+          }}
+        >
+          Valt
+        </span>
+      </div>
+
+      {/* Headline */}
+      <div className="entry-text" style={{ textAlign: "center", padding: "0 24px" }}>
+        <h1
+          style={{
+            fontFamily: "var(--font-display), Epilogue, sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(26px, 5vw, 44px)",
+            lineHeight: 1.08,
+            color: "var(--text-1)",
+            margin: 0,
+          }}
+        >
+          Showcase{" "}
+          <em style={{ fontStyle: "italic", color: "var(--accent)" }}>you</em>{" "}
+          with style.
+        </h1>
+        <p style={{ color: "var(--text-2)", fontSize: 15, lineHeight: 1.6, marginTop: 12 }}>
+          Your links, your story — all in one place.
+        </p>
+      </div>
+
+      {/* Buttons */}
+      <div
+        className="entry-btns"
         style={{
-          background: "#0A0A0A",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          marginTop: 36,
+          width: "min(100%, 340px)",
+          padding: "0 24px",
         }}
       >
-        <ValtLogo />
-
-        <nav className="hidden items-center gap-8 md:flex">
-          <a
-            href="#features"
-            className="text-sm"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
-            Features
-          </a>
-          <a
-            href="#how"
-            className="text-sm"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
-            How it Works
-          </a>
-        </nav>
+        <button
+          onClick={handleGoogleLogin}
+          disabled={googleLoading}
+          style={{
+            height: 50,
+            borderRadius: 9999,
+            background: "#F97316",
+            border: "none",
+            color: "#ffffff",
+            fontSize: 15,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            cursor: googleLoading ? "not-allowed" : "pointer",
+            opacity: googleLoading ? 0.7 : 1,
+            width: "100%",
+          }}
+        >
+          {googleLoading ? (
+            <svg className="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+          ) : (
+            <GoogleIcon />
+          )}
+          Continue with Google
+        </button>
 
         <Link
-          href="/signup"
-          className="rounded-lg border px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/5"
-          style={{ borderColor: "rgba(255,255,255,0.2)" }}
-        >
-          Get Started
-        </Link>
-      </header>
-
-      {/* ── Hero ── */}
-      <section
-        className="relative flex min-h-[82vh] items-center overflow-hidden"
-        style={{ paddingTop: "80px", paddingBottom: "80px" }}
-      >
-        {/* Dot grid — right side, fading left */}
-        <div
-          className="pointer-events-none absolute inset-0"
+          href="/login"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.13) 1.5px, transparent 1.5px)",
-            backgroundSize: "10px 10px",
-            maskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.8) 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.8) 100%)",
+            height: 50,
+            borderRadius: 9999,
+            background: "rgba(249, 115, 22, 0.5)",
+            border: "none",
+            color: "#ffffff",
+            fontSize: 15,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            textDecoration: "none",
+            width: "100%",
           }}
-        />
+        >
+          <Mail size={17} />
+          Continue with Email
+        </Link>
 
-        <div className="relative mx-auto w-full max-w-6xl px-6 md:px-10">
-          <div className="max-w-[580px]">
-            {/* Eyebrow */}
-            <p
-              className="mb-6 text-xs font-medium uppercase tracking-[3px]"
-              style={{ color: "rgba(255,255,255,0.35)" }}
-            >
-              Link in bio — reimagined
-            </p>
+        <p style={{ textAlign: "center", fontSize: 12, color: "var(--text-3)", marginTop: 4 }}>
+          Free forever · No credit card required
+        </p>
+      </div>
 
-            {/* Heading */}
-            <h1
-              className="font-display font-bold leading-[1.05] tracking-tight"
-              style={{
-                fontFamily: "var(--font-epilogue), Epilogue, sans-serif",
-                fontSize: "clamp(48px, 7vw, 72px)",
-                color: "#fff",
-              }}
-            >
-              Your Links,
-              <br />
-              Your Identity.
-            </h1>
-
-            {/* Subtext */}
-            <p
-              className="mt-6 max-w-[440px] text-[17px] leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              A customizable link-in-bio platform with{" "}
-              <strong className="font-semibold text-white">
-                real analytics
-              </strong>
-              ,{" "}
-              <strong className="font-semibold text-white">theme control</strong>
-              , and a space to showcase{" "}
-              <strong className="font-semibold text-white">who you are</strong>.
-            </p>
-
-            {/* CTAs */}
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link
-                href="/signup"
-                className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-gray-100"
-              >
-                Create Your Page &rsaquo;
-              </Link>
-              <a
-                href="#features"
-                className="rounded-lg border px-6 py-3 text-sm font-medium text-white transition-all hover:bg-white/5"
-                style={{ borderColor: "rgba(255,255,255,0.18)" }}
-              >
-                See Examples
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Social Proof ── */}
-      <section
-        className="py-10"
-        style={{
-          background: "#0F0F0F",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="mx-auto max-w-5xl px-6">
-          <p
-            className="text-center text-[11px] font-medium uppercase tracking-[3px]"
-            style={{ color: "rgba(255,255,255,0.35)" }}
-          >
-            Trusted By
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            {BRANDS.map((brand) => (
-              <div
-                key={brand}
-                className="flex items-center gap-2"
-                style={{ color: "rgba(255,255,255,0.28)" }}
-              >
-                <Settings2 className="h-3.5 w-3.5" />
-                <span className="text-sm">{brand}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Features ── */}
-      <section
-        id="features"
-        className="py-28"
-        style={{ background: "#0A0A0A" }}
-      >
-        <div className="mx-auto max-w-5xl px-6 md:px-10">
-          {/* Section header */}
-          <div className="mx-auto max-w-xl text-center">
-            <h2
-              className="font-display text-[36px] font-bold leading-tight"
-              style={{ fontFamily: "var(--font-epilogue), Epilogue, sans-serif" }}
-            >
-              Everything you need
-            </h2>
-            <p
-              className="mt-3 text-base leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              One page. All your links. Built to represent you — not a generic
-              template.
-            </p>
-          </div>
-
-          {/* Cards grid */}
-          <div className="mt-14 grid gap-4 sm:grid-cols-2">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="feature-card rounded-2xl p-8"
-                style={{
-                  background: "#111111",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                }}
-              >
-                <f.icon
-                  className="h-8 w-8"
-                  strokeWidth={1.5}
-                  style={{ color: "rgba(255,255,255,0.7)" }}
-                />
-                <h3 className="mt-5 text-base font-semibold text-white">
-                  {f.title}
-                </h3>
-                <p
-                  className="mt-2 text-sm leading-relaxed"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
-                >
-                  {f.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── How it works ── */}
-      <section
-        id="how"
-        className="py-24"
-        style={{
-          background: "#111111",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="mx-auto max-w-5xl px-6 md:px-10">
-          <h2
-            className="font-display text-center text-[32px] font-bold"
-            style={{ fontFamily: "var(--font-epilogue), Epilogue, sans-serif" }}
-          >
-            Three steps to live
-          </h2>
-          <div className="mt-14 grid gap-8 sm:grid-cols-3">
-            {[
-              {
-                step: "01",
-                title: "Create your account",
-                desc: "Sign up with email or Google. Pick your unique username.",
-              },
-              {
-                step: "02",
-                title: "Add your links",
-                desc: "Drop in all your important URLs, socials, and upload your CV.",
-              },
-              {
-                step: "03",
-                title: "Customize & share",
-                desc: "Pick your theme, colors, and fonts. Then share your Valt link.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="flex flex-col">
-                <span
-                  className="font-display text-4xl font-bold"
-                  style={{
-                    fontFamily: "var(--font-epilogue), Epilogue, sans-serif",
-                    color: "rgba(255,255,255,0.1)",
-                  }}
-                >
-                  {item.step}
-                </span>
-                <h3 className="mt-4 text-base font-semibold text-white">
-                  {item.title}
-                </h3>
-                <p
-                  className="mt-2 text-sm leading-relaxed"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
-                >
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA ── */}
-      <section
-        className="py-24"
-        style={{ background: "#0A0A0A" }}
-      >
-        <div className="mx-auto max-w-lg px-6 text-center">
-          <h2
-            className="font-display text-[36px] font-bold leading-tight"
-            style={{ fontFamily: "var(--font-epilogue), Epilogue, sans-serif" }}
-          >
-            Ready to build your page?
-          </h2>
-          <p
-            className="mt-4 text-base"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
-            Free to start. No credit card required.
-          </p>
-          <Link
-            href="/signup"
-            className="mt-8 inline-flex items-center rounded-lg bg-white px-8 py-3.5 text-sm font-medium text-black transition-all hover:bg-gray-100"
-          >
-            Get Started Free
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer
-        className="py-10"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
-          <ValtLogo />
-          <p
-            className="text-sm"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-          >
-            © 2025 Valt. All rights reserved.
-          </p>
-          <nav className="flex gap-6">
-            {["Features", "Login", "Sign Up"].map((item) => (
-              <Link
-                key={item}
-                href={
-                  item === "Login"
-                    ? "/login"
-                    : item === "Sign Up"
-                    ? "/signup"
-                    : "#features"
-                }
-                className="text-sm transition-colors hover:text-white"
-                style={{ color: "rgba(255,255,255,0.35)" }}
-              >
-                {item}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </footer>
+      {/* Footer */}
+      <p style={{ position: "absolute", bottom: 20, fontSize: 12, color: "var(--text-3)" }}>
+        © 2025 Valt &nbsp;·&nbsp;
+        <a href="#" style={{ color: "var(--text-3)", textDecoration: "none" }}>
+          Terms of Service
+        </a>
+      </p>
     </div>
   );
 }
