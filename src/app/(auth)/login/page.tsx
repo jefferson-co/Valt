@@ -190,20 +190,30 @@ function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { setError(error.message); setLoading(false); return; }
-    router.push("/dashboard");
-    router.refresh();
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { setError(error.message); setLoading(false); return; }
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
   }
 
   async function handleGoogleLogin() {
     setGoogleLoading(true);
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) { setGoogleLoading(false); }
+    } catch {
+      setGoogleLoading(false);
+    }
   }
 
   return (

@@ -21,11 +21,16 @@ export default function EntryPage() {
 
   async function handleGoogleLogin() {
     setGoogleLoading(true);
-    const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) { setGoogleLoading(false); }
+    } catch {
+      setGoogleLoading(false);
+    }
   }
 
   return (
